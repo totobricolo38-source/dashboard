@@ -1,60 +1,23 @@
 // meteo.js
+let xNuage = 0;
 
-// Variables pour l'animation du nuage
-let xNuage = 100;
-let direction = 1;
+export function dessinerMeteo(ctx, x, y, w, h) {
+    // On dessine un fond pour cette zone
+    ctx.fillStyle = "#1a1a1a";
+    ctx.fillRect(x + 10, y + 10, w - 20, h - 20); // Petit padding de 10px
 
-export function dessinerMeteoDynamique(ctx) {
-  const canvas = ctx.canvas;
-
-  // 1. Fonction de dessin principale (ton ancien code)
-  function dessiner() {
-    // Effacer le canvas à chaque image
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // --- LE SOLEIL ---
-    ctx.fillStyle = "#FFD700"; // Jaune or
+    // Le soleil centré dans SA zone
+    ctx.fillStyle = "yellow";
     ctx.beginPath();
-    ctx.arc(150, 100, 50, 0, Math.PI * 2); // Corps
+    ctx.arc(x + w/2, y + h/3, 40, 0, Math.PI * 2);
     ctx.fill();
 
-    // Rayons (boucle simple)
-    ctx.strokeStyle = "#FFD700";
-    ctx.lineWidth = 4;
-    for (let i = 0; i < 12; i++) {
-      ctx.beginPath();
-      ctx.moveTo(150, 100);
-      // Calcul des coordonnées pour les rayons
-      const angle = (i * Math.PI) / 6;
-      const xEnd = 150 + Math.cos(angle) * 80;
-      const yEnd = 100 + Math.sin(angle) * 80;
-      ctx.lineTo(xEnd, yEnd);
-      ctx.stroke();
-    }
+    // Animation du nuage limitée à SA zone
+    xNuage += 0.5;
+    if (xNuage > w - 50) xNuage = 0;
 
-    // --- LE NUAGE (animé) ---
-    // Mise à jour de la position
-    xNuage += 0.5 * direction;
-    // Rebondir sur les bords
-    if (xNuage > canvas.width - 100 || xNuage < 50) {
-      direction *= -1;
-    }
-
-    ctx.fillStyle = "rgba(255, 255, 255, 0.8)"; // Blanc semi-transparent
-    const yNuage = 150;
-
-    // Dessin du nuage (assemblage de cercles)
+    ctx.fillStyle = "white";
     ctx.beginPath();
-    ctx.arc(xNuage, yNuage, 30, 0, Math.PI * 2); // Gauche
-    ctx.arc(xNuage + 40, yNuage, 40, 0, Math.PI * 2); // Centre
-    ctx.arc(xNuage + 80, yNuage, 30, 0, Math.PI * 2); // Droite
-    ctx.arc(xNuage + 40, yNuage - 30, 30, 0, Math.PI * 2); // Haut
+    ctx.arc(x + xNuage, y + h/2, 20, 0, Math.PI * 2);
     ctx.fill();
-
-    // 2. Lancer la boucle d'animation
-    requestAnimationFrame(dessiner);
-  }
-
-  // Démarrer l'animation une première fois
-  dessiner();
 }
