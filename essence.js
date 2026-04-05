@@ -1,44 +1,42 @@
-/* Récupération du prix SP95 à Coublevie (Flux Temps Réel Gouv) */
+/* Récupération du prix par Code Postal (38500) */
 export async function recupererPrix() {
-    /* Nouvelle URL API V2.1 plus stable */
-    var url = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-des-carburants-en-france-flux-instantane-v2/records?where=ville%3D%22COUBLEVIE%22&limit=1";
+    /* Recherche sur Voiron/Coublevie via le code postal 38500 */
+    var url = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-des-carburants-en-france-flux-instantane-v2/records?where=cp%3D%2238500%22&limit=10";
     
     try {
         var reponse = await fetch(url);
         var donnees = await reponse.json();
         
-        /* On vérifie si on a bien un résultat pour Coublevie */
         if (donnees.results && donnees.results.length > 0) {
-            var station = donnees.results[0];
-            /* On cherche le SP95 dans la liste des prix de la station */
-            var prix_trouve = station.prix.find(function(p) {
-                return p.nom === "SP95";
+            /* On cherche la station Carrefour (souvent la première ou la moins chère) */
+            var station = donnees.results.find(function(s) {
+                return s.nom && s.nom.includes("Carrefour");
+            }) || donnees.results[0]; // Sinon on prend la première station de la liste
+
+            /* On cherche le SP95 ou E5 */
+            var carburant = station.prix.find(function(p) {
+                return p.nom === "SP95" || p.nom === "E5";
             });
             
-            if (prix_trouve) {
-                return prix_trouve.valeur; /* <--- LA VRAIE VALEUR ICI */
+            if (carburant) {
+                return carburant.valeur; 
             }
         }
-        return "N/A"; /* Si la station ne vend pas de SP95 */
+        return "N/A";
     } catch (erreur) {
-        console.error("Erreur de connexion API Gouv :", erreur);
-        return "ERR"; /* Affiche ERR si pas d'internet */
+        return "ERR";
     }
 }
 
-/* Rendu graphique */
+/* Rendu graphique inchangé */
 export function dessinerEssence(ctx, x, y, prix) {
     ctx.strokeStyle = "#ffffff";
     ctx.lineWidth = 2;
     ctx.strokeRect(x, y, 200, 200);
-
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
-
     ctx.font = "bold 25px Arial";
     ctx.fillText("SP95", x + 100, y + 80);
-
-    /* Affichage du prix dynamique */
     ctx.font = "bold 45px Arial";
     ctx.fillText(prix + "€", x + 100, y + 140);
 }
