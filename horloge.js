@@ -1,12 +1,18 @@
 // horloge.js
-export function dessinerHorloge(ctx, x, y, w, h) {
+export function dessinerHorloge(ctx, x, y) {
+    const w = 200;
+    const h = 200;
+
+    // Cadre blanc
+    ctx.strokeStyle = "white";
+    ctx.strokeRect(x, y, w, h);
+
     const maintenant = new Date();
-    const heure = maintenant.getHours().toString().padStart(2, '0');
-    const minutes = maintenant.getMinutes().toString().padStart(2, '0');
-    const secondes = maintenant.getSeconds().toString().padStart(2, '0');
+    const hStr = maintenant.getHours().toString().padStart(2, '0');
+    const mStr = maintenant.getMinutes().toString().padStart(2, '0');
 
     ctx.fillStyle = "white";
     ctx.font = "bold 40px Arial";
     ctx.textAlign = "center";
-    ctx.fillText(`${heure}:${minutes}:${secondes}`, x + w/2, y + h/2);
+    ctx.fillText(`${hStr}:${mStr}`, x + w/2, y + h/2 + 15);
 }
