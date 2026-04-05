@@ -4,26 +4,18 @@ import { dessinerHorloge } from './horloge.js';
 const canvas = document.getElementById('mainCanvas');
 const ctx = canvas.getContext('2d');
 
-// Ajuster le canvas à la taille de l'écran
-function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resize);
-resize();
-
 function boucle() {
+    // On ne touche plus à canvas.width ici pour garder le 1200x600
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Divisons l'écran en 2 zones par exemple
-    const largeurZone = canvas.width / 2;
+    // Bloc 1 : Météo à (50, 50)
+    dessinerMeteo(ctx, 50, 50);
 
-    // Zone gauche : Météo
-    // On passe le contexte, et les coordonnées (x, y, largeur, hauteur)
-    dessinerMeteo(ctx, 0, 0, largeurZone, canvas.height);
-
-    // Zone droite : Horloge
-    dessinerHorloge(ctx, largeurZone, 0, largeurZone, canvas.height);
+    // Bloc 2 : Horloge à côté à (300, 50)
+    // On passe juste x=300 et y=50
+    if (typeof dessinerHorloge === 'function') {
+        dessinerHorloge(ctx, 300, 50);
+    }
 
     requestAnimationFrame(boucle);
 }
