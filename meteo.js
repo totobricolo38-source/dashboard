@@ -1,23 +1,33 @@
 // meteo.js
-let xNuage = 0;
+let angleOscillation = 0;
+
+function cercle(ctx, x, y, rayon, couleur) {
+    ctx.fillStyle = couleur;
+    ctx.beginPath();
+    ctx.arc(x, y, rayon, 0, Math.PI * 2);
+    ctx.fill();
+}
 
 export function dessinerMeteo(ctx, x, y, w, h) {
-    // On dessine un fond pour cette zone
+    // Nettoyage de la zone (fond sombre)
     ctx.fillStyle = "#1a1a1a";
-    ctx.fillRect(x + 10, y + 10, w - 20, h - 20); // Petit padding de 10px
+    ctx.fillRect(x + 10, y + 10, w - 20, h - 20);
 
-    // Le soleil centré dans SA zone
-    ctx.fillStyle = "yellow";
-    ctx.beginPath();
-    ctx.arc(x + w/2, y + h/3, 40, 0, Math.PI * 2);
-    ctx.fill();
+    // Positions de base centrées dans la zone
+    const centreX = x + w / 2;
+    const centreY = y + h / 2;
 
-    // Animation du nuage limitée à SA zone
-    xNuage += 0.5;
-    if (xNuage > w - 50) xNuage = 0;
+    // --- LE SOLEIL (Fixe) ---
+    cercle(ctx, centreX, centreY - 40, 50, "yellow");
 
-    ctx.fillStyle = "white";
-    ctx.beginPath();
-    ctx.arc(x + xNuage, y + h/2, 20, 0, Math.PI * 2);
-    ctx.fill();
+    // --- LES NUAGES (Oscillants) ---
+    // Calcul de l'offset vertical (oscillation de 15 pixels de haut en bas)
+    angleOscillation += 0.05;
+    const offsetV = Math.sin(angleOscillation) * 15;
+    const yNuage = centreY + 20 + offsetV;
+
+    // Dessin des 3 ronds du nuage
+    cercle(ctx, centreX - 35, yNuage, 35, "rgba(255, 255, 255, 0.9)"); // Gauche
+    cercle(ctx, centreX + 35, yNuage, 35, "rgba(255, 255, 255, 0.9)"); // Droite
+    cercle(ctx, centreX, yNuage - 20, 40, "white");                  // Sommet
 }
