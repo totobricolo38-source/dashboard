@@ -1,6 +1,5 @@
-// --- FICHIER maison.js (AUTONOME : DATA + DESSIN) ---
+// --- FICHIER maison.js (SCRUTATION PAR FIELDS) ---
 
-// 1. CONFIGURATION DU SVG (Ton tracé exact avec corps rempli)
 const svgData = `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 24">
         <g fill="#00ffff" stroke="#00ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -14,33 +13,37 @@ const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
 const url = URL.createObjectURL(svgBlob);
 imgMaison.src = url;
 
-// 2. RÉCUPÉRATION DES DONNÉES THINGSPEAK
+// Variables pour stocker les dernières valeurs valides
 let tempSalon = "--";
 let tempChambre = "--";
 
+// Fonction de récupération spécifique par Field
 export async function majDonneesMaison() {
-    const urlAPI = "https://api.thingspeak.com/channels/2787477/feeds/last.json";
+    const channelID = "2787477";
+    
     try {
-        const reponse = await fetch(urlAPI);
-        const data = await reponse.json();
-        
-        // Mappage selon ta configuration :
-        tempSalon = data.field2 || "--";   // Field 2 = Salon
-        tempChambre = data.field7 || "--"; // Field 7 = Chambre
-        
-        console.log("Mise à jour Maison OK");
+        // 1. Récupération Salon (Field 2)
+        const resSalon = await fetch(`https://api.thingspeak.com/channels/${channelID}/fields/2/last.json`);
+        const dataSalon = await resSalon.json();
+        if (dataSalon.field2 !== null) tempSalon = dataSalon.field2;
+
+        // 2. Récupération Chambre (Field 7)
+        const resChambre = await fetch(`https://api.thingspeak.com/channels/${channelID}/fields/7/last.json`);
+        const dataChambre = await resChambre.json();
+        if (dataChambre.field7 !== null) tempChambre = dataChambre.field7;
+
+        console.log("Mise à jour Fields 2 & 7 OK");
     } catch (e) {
-        console.error("Erreur récup data Maison:", e);
+        console.error("Erreur de scrutation par fields:", e);
     }
 }
 
-// Lancement automatique au chargement et toutes les 30 secondes
+// Rafraîchissement toutes les 30 secondes
 majDonneesMaison();
 setInterval(majDonneesMaison, 30000);
 
-// 3. FONCTION DE RENDU
 export function dessinerMaison(ctx, x, y, w = 200, h = 200) {
-    // A. CADRE BLANC
+    // A. CADRE
     ctx.save();
     ctx.strokeStyle = "white";
     ctx.lineWidth = 2;
@@ -49,7 +52,7 @@ export function dessinerMaison(ctx, x, y, w = 200, h = 200) {
 
     if (!imgMaison.complete) return;
 
-    // B. ICÔNE NÉON (Positionnée en haut pour laisser de la place)
+    // B. ICÔNE
     ctx.save();
     ctx.shadowBlur = 20;
     ctx.shadowColor = "#00ffff";
@@ -57,16 +60,14 @@ export function dessinerMaison(ctx, x, y, w = 200, h = 200) {
     ctx.drawImage(imgMaison, x + (w/2 - size/2), y + 15, size, size);
     ctx.restore();
 
-    // C. AFFICHAGE DES TEMPÉRATURES
+    // C. TEXTES (Toujours à jour grâce à la scrutation individuelle)
     ctx.save();
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
     
-    // Salon (en gras)
     ctx.font = "bold 18px Arial";
     ctx.fillText("SALON : " + tempSalon + "°", x + 100, y + 130);
     
-    // Chambre
     ctx.font = "18px Arial";
     ctx.fillText("CHAMBRE : " + tempChambre + "°", x + 100, y + 165);
     
