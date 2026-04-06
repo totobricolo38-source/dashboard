@@ -1,8 +1,10 @@
 // --- FICHIER piscine.js ---
 
 // 1. Chargement de l'icône SVG locale
+// --- ATTENTION : Vérifie l'orthographe ! 'pisine.svg' ou 'piscine.svg' ---
+// D'après ta capture, c'était 'pisine.svg'. J'utilise cette orthographe ici.
 const imgPiscine = new Image();
-imgPiscine.src = "./piscine.svg"; 
+imgPiscine.src = "./pisine.svg"; 
 
 // Variables globales pour stocker les données (initialisées à vide)
 let tempAir = "--";
@@ -61,14 +63,30 @@ export function dessinerPiscine(ctx, x, y, w = 200, h = 200) {
 
     // On ne dessine l'icône que si le fichier est bien chargé
     if (imgPiscine.complete) {
-        // B. DESSIN DE L'ICÔNE (piscine.svg)
+        // B. DESSIN ET COLORIAGE DE L'ICÔNE
         ctx.save();
+        
+        // 1. Appliquer la lueur cyan
         ctx.shadowBlur = 15;
-        ctx.shadowColor = "#00ffff"; // Lueur cyan
+        ctx.shadowColor = "#00ffff"; 
         
         const size = 80;
-        // Centrage horizontal (x + w/2) et décalage vertical vers le haut
-        ctx.drawImage(imgPiscine, x + (w / 2 - size / 2), y + 15, size, size);
+        const imgX = x + (w / 2 - size / 2);
+        const imgY = y + 15;
+
+        // 2. Dessiner l'image (l'icône sera peinte en noir/sans couleur)
+        ctx.drawImage(imgPiscine, imgX, imgY, size, size);
+
+        // 3. --- TECHNIQUE DE COLORIAGE ---
+        // Change le mode de fusion : on ne dessine que LÀ OÙ IL Y A DÉJÀ QUELQUE CHOSE.
+        ctx.globalCompositeOperation = 'source-in';
+        
+        // Dessine un rectangle de la couleur finale (#00ffff) sur toute la zone de l'image.
+        // Comme le mode est 'source-in', ce rectangle ne remplira que les pixels de l'icône.
+        ctx.fillStyle = "#00ffff"; // La couleur finale de l'icône
+        ctx.fillRect(imgX, imgY, size, size);
+
+        // 4. Restaurer le mode de fusion normal pour ne pas casser la suite du dessin
         ctx.restore();
     }
 
