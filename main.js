@@ -28,7 +28,7 @@ function boucle_principale() {
     dessinerHorloge(ctx, 400, 0);
     dessinerMaison(ctx, 600, 0, 200, 200);
     dessinerPiscine(ctx, 800, 0, 200, 200);
-    dessinerPiscine(ctx, 0, 200, 200, 200);
+    dessinerBatterie(ctx, 0, 200, 200, 200);
     requestAnimationFrame(boucle_principale);
 }
 
