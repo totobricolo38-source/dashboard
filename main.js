@@ -2,6 +2,7 @@ import { dessinerMeteo } from './meteo.js';
 import { dessinerHorloge } from './horloge.js';
 import { dessinerEssence, recupererPrix } from './essence.js';
 import { dessinerMaison } from './maison.js';
+import { dessinerPiscine } from './piscine.js';
 
 // 1. INITIALISATION DU CANVAS (RÉSOLUTION FIXE)
 const canvas = document.getElementById('mainCanvas');
@@ -35,6 +36,7 @@ function boucle_principale() {
     dessinerMeteo(ctx, 200, 0);
     dessinerHorloge(ctx, 400, 0);
     dessinerMaison(ctx, 600, 0, 200, 200);
+    dessinerPiscine(ctx, 800, 0, 200, 200);
     requestAnimationFrame(boucle_principale);
 }
 
