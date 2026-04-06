@@ -25,13 +25,14 @@ export function dessiner_icone(ctx, x, y, w, h, name) {
 }
 
 export function dessiner_widget(ctx, x, y, iconeName, ligne1, ligne2, ligne3) {
+    const cheminComplet = `./svg/${iconeName}`;
     ctx.save();
     ctx.strokeStyle = "white";
     ctx.lineWidth = 2;
     ctx.strokeRect(x, y, 200, 200);
     ctx.restore();
 
-    dessiner_icone(ctx, x + 60, y + 15, 80, 80, iconeName);
+    dessiner_icone(ctx, x + 60, y + 15, 80, 80, cheminComplet);
 
     ctx.save();
     ctx.fillStyle = "white";
