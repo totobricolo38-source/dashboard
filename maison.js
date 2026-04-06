@@ -1,40 +1,31 @@
-// --- FICHIER maison.js (SCRUTATION PAR FIELDS) ---
-
-const svgData = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 24">
-        <g fill="#00ffff" stroke="#00ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M 4 21 L 4 11 L 10 5 L 16 11 L 16 21 Z" />
-            <path d="M 2 10 L 10 2 L 18 10" fill="none" />
-        </g>
-    </svg>`;
-
-const imgMaison = new Image();
-const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
-const url = URL.createObjectURL(svgBlob);
-imgMaison.src = url;
+// --- FICHIER maison.js ---
+import { dessiner_icone } from './utils.js';
 
 // Variables pour stocker les dernières valeurs valides
 let tempSalon = "--";
 let tempChambre = "--";
 
-// Fonction de récupération spécifique par Field
+/**
+ * Récupération spécifique par Field (Salon = 2, Chambre = 7)
+ */
 export async function majDonneesMaison() {
     const channelID = "2787477";
     
     try {
-        // 1. Récupération Salon (Field 2)
-        const resSalon = await fetch(`https://api.thingspeak.com/channels/${channelID}/fields/2/last.json`);
+        const [resSalon, resChambre] = await Promise.all([
+            fetch(`https://api.thingspeak.com/channels/${channelID}/fields/2/last.json`),
+            fetch(`https://api.thingspeak.com/channels/${channelID}/fields/7/last.json`)
+        ]);
+
         const dataSalon = await resSalon.json();
-        if (dataSalon.field2 !== null) tempSalon = dataSalon.field2;
-
-        // 2. Récupération Chambre (Field 7)
-        const resChambre = await fetch(`https://api.thingspeak.com/channels/${channelID}/fields/7/last.json`);
         const dataChambre = await resChambre.json();
-        if (dataChambre.field7 !== null) tempChambre = dataChambre.field7;
 
-        console.log("Mise à jour Fields 2 & 7 OK");
+        if (dataSalon && dataSalon.field2 !== null) tempSalon = dataSalon.field2;
+        if (dataChambre && dataChambre.field7 !== null) tempChambre = dataChambre.field7;
+
+        console.log("Mise à jour Maison (Fields 2 & 7) OK");
     } catch (e) {
-        console.error("Erreur de scrutation par fields:", e);
+        console.error("Erreur Fetch Maison:", e);
     }
 }
 
@@ -42,6 +33,9 @@ export async function majDonneesMaison() {
 majDonneesMaison();
 setInterval(majDonneesMaison, 30000);
 
+/**
+ * Dessin du widget Maison
+ */
 export function dessinerMaison(ctx, x, y, w = 200, h = 200) {
     // A. CADRE
     ctx.save();
@@ -50,26 +44,26 @@ export function dessinerMaison(ctx, x, y, w = 200, h = 200) {
     ctx.strokeRect(x, y, w, h);
     ctx.restore();
 
-    if (!imgMaison.complete) return;
+    // B. ICÔNE (via utils.js)
+    // On utilise "maison.svg" (assure-toi que le fichier existe dans ton dossier)
+    const tailleIcone = 80;
+    const iconeX = x + (w / 2 - tailleIcone / 2);
+    const iconeY = y + 15;
+    
+    dessiner_icone(ctx, iconeX, iconeY, tailleIcone, tailleIcone, "maison.svg");
 
-    // B. ICÔNE
-    ctx.save();
-    ctx.shadowBlur = 20;
-    ctx.shadowColor = "#00ffff";
-    const size = 80;
-    ctx.drawImage(imgMaison, x + (w/2 - size/2), y + 15, size, size);
-    ctx.restore();
-
-    // C. TEXTES (Toujours à jour grâce à la scrutation individuelle)
+    // C. TEXTES
     ctx.save();
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
     
+    // Salon
     ctx.font = "bold 18px Arial";
-    ctx.fillText("SALON : " + tempSalon + "°", x + 100, y + 130);
+    ctx.fillText("SALON : " + tempSalon + "°", x + w/2, y + 130);
     
+    // Chambre
     ctx.font = "18px Arial";
-    ctx.fillText("CHAMBRE : " + tempChambre + "°", x + 100, y + 165);
+    ctx.fillText("CHAMBRE : " + tempChambre + "°", x + w/2, y + 165);
     
     ctx.restore();
 }
