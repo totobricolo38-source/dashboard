@@ -2,49 +2,48 @@
 import { dessiner_icone } from './utils.js';
 
 /**
- * Rendu du module Horloge Géant (600x400)
+ * Rendu du module Horloge Central (600x400)
  */
 export function dessinerHorloge2(ctx, x, y) {
     const maintenant = new Date();
-    
-    // 1. LE CADRE GÉANT (Style Néon)
+    const bleuNeon = "#00ffff"; // Ton Cyan fétiche
+
+    // 1. LE CADRE GÉANT (600x400)
     ctx.save();
     ctx.strokeStyle = "white";
-    ctx.lineWidth = 3; // Un peu plus épais pour la taille
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = "#00ffff";
+    ctx.lineWidth = 2;
+    ctx.shadowBlur = 20;      // Lueur extérieure
+    ctx.shadowColor = bleuNeon;
     ctx.strokeRect(x, y, 600, 400);
     ctx.restore();
 
-    // 2. L'ICÔNE (Positionnée en haut à gauche ou centrée)
-    dessiner_icone(ctx, x + 260, y + 30, 80, 80, "horloge.svg");
+    // 2. L'ICÔNE CENTRALE
+    // On la place un peu plus haut pour laisser de la place au texte
+    dessiner_icone(ctx, x + 250, y + 40, 100, 100, "horloge.svg");
 
-    // 3. TEXTE (Heure / Date)
+    // 3. TEXTE (Heure & Date)
     ctx.save();
-    ctx.fillStyle = "white";
     ctx.textAlign = "center";
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = "#00ffff";
+    ctx.fillStyle = "white";
+    
+    // On ajoute de la lueur sur le texte aussi !
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = bleuNeon;
 
-    // HEURE (Trés grand au centre)
+    // L'HEURE (Format HH:MM)
     const heures = maintenant.getHours().toString().padStart(2, '0');
     const minutes = maintenant.getMinutes().toString().padStart(2, '0');
-    const secondes = maintenant.getSeconds().toString().padStart(2, '0');
     
-    ctx.font = "bold 100px Arial";
-    ctx.fillText(`${heures}:${minutes}`, x + 300, y + 220);
-    
-    // SECONDES (Plus petit, à côté ou en dessous)
-    ctx.font = "bold 40px Arial";
-    ctx.fillText(secondes, x + 300, y + 270);
+    ctx.font = "bold 120px Arial"; // Très gros pour remplir le 600x400
+    ctx.fillText(`${heures}:${minutes}`, x + 300, y + 250);
 
-    // DATE (En bas)
-    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    // LA DATE (En majuscules pour le style cockpit)
+    const options = { weekday: 'long', day: 'numeric', month: 'long' };
     const dateStr = maintenant.toLocaleDateString('fr-FR', options).toUpperCase();
     
-    ctx.font = "24px Arial";
-    ctx.letterSpacing = "2px"; // Pour le style cockpit
-    ctx.fillText(dateStr, x + 300, y + 350);
+    ctx.font = "bold 25px Arial";
+    ctx.letterSpacing = "4px"; // Espace entre les lettres pour le look "Tech"
+    ctx.fillText(dateStr, x + 300, y + 330);
 
     ctx.restore();
 }
