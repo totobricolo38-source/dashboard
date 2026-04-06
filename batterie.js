@@ -26,5 +26,6 @@ setInterval(majDonneesBatterie, 30000);
  * Rendu du widget
  */
 export function dessinerBatterie(ctx, x, y) {
-    dessiner_widget(ctx,x,y,"batterie.svg",`EXT : ${batAir}`,`PISC : ${batPiscine}`,`CHAM : ${batChambre});
+    // Correction : Ajout du ` après ${batChambre} et de la parenthèse fermante
+    dessiner_widget(ctx, x, y, "batterie.svg", `EXT : ${batAir}`, `PISC : ${batPiscine}`, `CHAM : ${batChambre}`);
 }
