@@ -1,6 +1,5 @@
 import { dessinerMeteo } from './meteo.js';
 import { dessinerHorloge } from './horloge.js';
-import { dessinerHorloge2 } from './horloge2.js';
 import { dessinerEssence } from './essence.js';
 import { dessinerMaison } from './maison.js';
 import { dessinerPiscine } from './piscine.js';
@@ -27,12 +26,11 @@ function boucle_principale() {
     // 2. DESSIN DES MODULES (Note : dessinerEssence n'a plus besoin du 4ème argument)
     dessinerEssence(ctx, 0, 0); 
     dessinerMeteo(ctx, 200, 0);
-    dessinerHorloge(ctx, 400, 0);
     dessinerMaison(ctx, 600, 0, 200, 200);
     dessinerPiscine(ctx, 800, 0, 200, 200);
     dessinerBatterie(ctx, 0, 200, 200, 200);
     dessinerBourse(ctx, 200, 200, 200, 200);
-    dessinerHorloge2(ctx,400,200,600,400);
+    dessinerHorloge(ctx,400,200,600,400);
     requestAnimationFrame(boucle_principale);
 }
 
