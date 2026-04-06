@@ -1,5 +1,5 @@
 let tempAir = "--";    // Température Voiron
-let codeMeteo = "--";   // Code météo (ex: 0, 1, 45...)
+let codeMeteo = "--";   // Code météo
 
 /* 1. Récupération des données Open-Meteo (Voiron) */
 export async function majDonneesMeteo() {
@@ -23,29 +23,29 @@ export async function majDonneesMeteo() {
 majDonneesMeteo();
 setInterval(majDonneesMeteo, 30000);
 
-/* 2. Rendu textuel (Sans graphismes) */
+/* 2. Rendu Graphique Minimaliste */
 export function dessinerMeteo(ctx, x, y) {
-    // x, y est le coin haut-gauche de ton bloc 200x200
-    
-    ctx.save();
-    
-    // Style Cyber Minimaliste
-    ctx.fillStyle = "#00FFFF";
-    ctx.textAlign = "center";
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = "#00FFFF";
+    // CADRE BLANC 200x200
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, 200, 200);
 
-    // Affichage de la Température (Milieu haut)
-    ctx.font = "bold 35px 'Courier New', monospace";
+    // TEXTE EN BLANC
+    ctx.save();
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+
+    // Température (Gros et centré)
+    ctx.font = "bold 35px Arial";
     ctx.fillText(tempAir + "°C", x + 100, y + 90);
     
-    // Affichage du Code Météo (Milieu bas)
-    ctx.font = "bold 20px 'Courier New', monospace";
-    ctx.fillText("CODE: " + codeMeteo, x + 100, y + 140);
+    // Code Météo
+    ctx.font = "bold 20px Arial";
+    ctx.fillText("CODE: " + codeMeteo, x + 100, y + 135);
     
-    // Label de la zone
-    ctx.font = "12px 'Courier New', monospace";
-    ctx.fillText("VOIRON METEO", x + 100, y + 175);
+    // Label
+    ctx.font = "14px Arial";
+    ctx.fillText("VOIRON", x + 100, y + 170);
 
     ctx.restore();
 }
