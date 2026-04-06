@@ -22,7 +22,7 @@ export async function majDonneesPiscine() {
     try {
         // On récupère Air (Field 6), Eau (Field 4), Niveau (Field 5)
         const [resAir, resEau, resNiv] = await Promise.all([
-            fetch(`https://api.thingspeak.com/channels/${channelID}/fields/6/last.json`),
+            fetch(`https://api.thingspeak.com/channels/${channelID}/fields/1/last.json`),
             fetch(`https://api.thingspeak.com/channels/${channelID}/fields/4/last.json`),
             fetch(`https://api.thingspeak.com/channels/${channelID}/fields/5/last.json`)
         ]);
