@@ -1,5 +1,5 @@
 // --- FICHIER meteo.js ---
-import { dessiner_widget, lire_api } from './utils.js';
+import { dessiner_widget, lire_api } from '../utils.js';
 
 let tempAir = "--";
 let codeMeteo = "--";

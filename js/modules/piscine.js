@@ -1,4 +1,4 @@
-import { dessiner_widget, lire_api } from './utils.js';
+import { dessiner_widget, lire_api } from '../utils.js';
 
 let tAir = "--", tEau = "--", nEau = "--";
 const BASE = "https://api.thingspeak.com/channels/2787477/fields/";

@@ -1,11 +1,11 @@
 
-import { dessinerMeteo } from './meteo.js';
-import { dessinerHorloge } from './horloge.js';
-import { dessinerEssence } from './essence.js';
-import { dessinerMaison } from './maison.js';
-import { dessinerPiscine } from './piscine.js';
-import { dessinerBatterie } from './batterie.js';
-import { dessinerBourse } from './bourse.js';
+import { dessinerMeteo } from './modules/meteo.js';
+import { dessinerHorloge } from './modules/horloge.js';
+import { dessinerEssence } from './modules/essence.js';
+import { dessinerMaison } from './modules/maison.js';
+import { dessinerPiscine } from './modules/piscine.js';
+import { dessinerBatterie } from './modules/batterie.js';
+import { dessinerBourse } from './modules/bourse.js';
 
 // 1. INITIALISATION DU CANVAS
 const canvas = document.getElementById('mainCanvas');

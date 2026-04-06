@@ -1,5 +1,5 @@
 // --- FICHIER bourse.js ---
-import { dessiner_widget, lire_api } from './utils.js';
+import { dessiner_widget, lire_api } from '../utils.js';
 
 let coursAI = "--";
 const URL_AI = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=AI.PAR&apikey=$H4PJP00MI2N4YYR6`;

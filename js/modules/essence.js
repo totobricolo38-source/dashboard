@@ -1,4 +1,4 @@
-import { dessiner_widget, lire_api } from './utils.js';
+import { dessiner_widget, lire_api } from '../utils.js';
 
 let prixE10 = "--";
 const URL_ESSENCE = `https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/prix-des-carburants-en-france-flux-instantane-v2/records?where=cp%3D%2238430%22&limit=1`;
