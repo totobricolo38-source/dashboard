@@ -1,6 +1,6 @@
 // --- FICHIER horloge.js ---
 
-export function dessinerHorloge2(ctx, x, y) {
+export function dessinerHorloge(ctx, x, y) {
     const maintenant = new Date();
     const bleuNeon = "#00ffff";
     const w = 600;
