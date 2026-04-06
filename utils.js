@@ -42,3 +42,29 @@ export function dessiner_widget(ctx, x, y, iconeName, ligne1, ligne2, ligne3) {
     ctx.fillText(ligne3, x + 100, y + 185);
     ctx.restore();
 }
+
+/**
+ * Récupère une donnée JSON depuis n'importe quel lien
+ * @param {string} url - Le lien complet de l'API
+ * @param {string} champ - Le nom de la clé à extraire (ex: "field1" ou "e10_prix")
+ * @returns {Promise<any>} - La valeur ou "--"
+ */
+export async function lire_api(url, champ) {
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        // Si c'est du ThingSpeak (format classique)
+        if (data[champ] !== undefined) return data[champ];
+        
+        // Si c'est l'API Essence (format OpenData avec results[0])
+        if (data.results && data.results[0] && data.results[0][champ] !== undefined) {
+            return data.results[0][champ];
+        }
+
+        return "--";
+    } catch (e) {
+        console.error("Erreur lecture API:", url, e);
+        return "--";
+    }
+}
