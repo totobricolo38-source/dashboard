@@ -1,6 +1,6 @@
-// --- FICHIER maison.js (AUTONOME : RECHERCHE + DESSIN) ---
+// --- FICHIER maison.js (AUTONOME : DATA + DESSIN) ---
 
-// 1. CONFIGURATION DU SVG ORIGINAL
+// 1. CONFIGURATION DU SVG (Ton tracé exact avec corps rempli)
 const svgData = `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 24">
         <g fill="#00ffff" stroke="#00ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -14,26 +14,31 @@ const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
 const url = URL.createObjectURL(svgBlob);
 imgMaison.src = url;
 
-// 2. GESTION DES DONNÉES (Stockées localement dans le module)
-let donneesHabitat = { salon: "--", chambre: "--" };
+// 2. RÉCUPÉRATION DES DONNÉES THINGSPEAK
+let tempSalon = "--";
+let tempChambre = "--";
 
-export async function mettreAJourHabitat() {
+export async function majDonneesMaison() {
     const urlAPI = "https://api.thingspeak.com/channels/2787477/feeds/last.json";
     try {
         const reponse = await fetch(urlAPI);
-        const f = await reponse.json();
-        donneesHabitat.salon = f.field2 || "--";   // Field 2 = Salon
-        donneesHabitat.chambre = f.field7 || "--"; // Field 7 = Chambre
+        const data = await reponse.json();
+        
+        // Mappage selon ta configuration :
+        tempSalon = data.field2 || "--";   // Field 2 = Salon
+        tempChambre = data.field7 || "--"; // Field 7 = Chambre
+        
+        console.log("Mise à jour Maison OK");
     } catch (e) {
-        console.error("Erreur IoT Maison:", e);
+        console.error("Erreur récup data Maison:", e);
     }
 }
 
-// Lancer une mise à jour immédiate et toutes les 30 secondes
-mettreAJourHabitat();
-setInterval(mettreAJourHabitat, 30000);
+// Lancement automatique au chargement et toutes les 30 secondes
+majDonneesMaison();
+setInterval(majDonneesMaison, 30000);
 
-// 3. FONCTION DE DESSIN
+// 3. FONCTION DE RENDU
 export function dessinerMaison(ctx, x, y, w = 200, h = 200) {
     // A. CADRE BLANC
     ctx.save();
@@ -44,26 +49,26 @@ export function dessinerMaison(ctx, x, y, w = 200, h = 200) {
 
     if (!imgMaison.complete) return;
 
-    // B. ICÔNE NÉON (Positionnée en haut)
+    // B. ICÔNE NÉON (Positionnée en haut pour laisser de la place)
     ctx.save();
     ctx.shadowBlur = 20;
     ctx.shadowColor = "#00ffff";
-    const iconeSize = 80;
-    ctx.drawImage(imgMaison, x + (w/2 - iconeSize/2), y + 15, iconeSize, iconeSize);
+    const size = 80;
+    ctx.drawImage(imgMaison, x + (w/2 - size/2), y + 15, size, size);
     ctx.restore();
 
-    // C. AFFICHAGE DES VRAIES VALEURS JSON
+    // C. AFFICHAGE DES TEMPÉRATURES
     ctx.save();
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
     
-    // Salon
+    // Salon (en gras)
     ctx.font = "bold 18px Arial";
-    ctx.fillText("SALON: " + donneesHabitat.salon + "°", x + 100, y + 130);
+    ctx.fillText("SALON : " + tempSalon + "°", x + 100, y + 130);
     
     // Chambre
     ctx.font = "18px Arial";
-    ctx.fillText("CHAMBRE: " + donneesHabitat.chambre + "°", x + 100, y + 165);
+    ctx.fillText("CHAMBRE : " + tempChambre + "°", x + 100, y + 165);
     
     ctx.restore();
 }
