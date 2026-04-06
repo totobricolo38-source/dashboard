@@ -48,8 +48,8 @@ export function dessinerBatterie(ctx, x, y) {
         x,
         y,
         "batterie.svg",
-        `EXT : ${batAir}%`,
-        `PISC : ${batPiscine}%`,
-        `CHAM : ${batChambre}%`
+        `EXT : ${batAir}`,
+        `PISC : ${batPiscine}`,
+        `CHAM : ${batChambre}`
     );
 }
