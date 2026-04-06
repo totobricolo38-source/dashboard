@@ -1,61 +1,69 @@
-// --- FICHIER utils.js ---
-const cacheIcones = {};
-const offCanvas = document.createElement('canvas');
-const offCtx = offCanvas.getContext('2d');
+// --- FICHIER horloge.js ---
 
-export function dessiner_icone(ctx, x, y, w, h, name) {
-    if (!cacheIcones[name]) {
-        cacheIcones[name] = new Image();
-        cacheIcones[name].src = "./" + name;
-    }
-    const img = cacheIcones[name];
-    if (img.complete && img.naturalWidth !== 0) {
-        offCanvas.width = w; offCanvas.height = h;
-        offCtx.clearRect(0, 0, w, h);
-        offCtx.drawImage(img, 0, 0, w, h);
-        offCtx.globalCompositeOperation = 'source-in';
-        offCtx.fillStyle = "#00ffff";
-        offCtx.fillRect(0, 0, w, h);
-        offCtx.globalCompositeOperation = 'source-over';
-        ctx.save();
-        ctx.shadowBlur = 20; ctx.shadowColor = "#00ffff";
-        ctx.drawImage(offCanvas, x, y, w, h);
-        ctx.restore();
-    }
-}
+export function dessinerHorloge2(ctx, x, y) {
+    const maintenant = new Date();
+    const bleuNeon = "#00ffff";
+    const w = 600;
+    const h = 400;
 
-export function dessiner_widget(ctx, x, y, iconeName, ligne1, ligne2, ligne3) {
+    // 1. LE CADRE (Comme tes autres widgets)
     ctx.save();
     ctx.strokeStyle = "white";
     ctx.lineWidth = 2;
-    ctx.strokeRect(x, y, 200, 200);
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = bleuNeon;
+    ctx.strokeRect(x, y, w, h);
     ctx.restore();
 
-    dessiner_icone(ctx, x + 60, y + 15, 80, 80, iconeName);
+    // 2. PRÉPARATION DU TEXTE (L'équivalent de ton offCanvas)
+    // On utilise un canvas temporaire pour colorier le texte en Cyan
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCanvas.width = w;
+    tempCanvas.height = h;
 
+    const heures = maintenant.getHours().toString().padStart(2, '0');
+    const minutes = maintenant.getMinutes().toString().padStart(2, '0');
+    const texteHeure = `${heures}:${minutes}`;
+
+    // On dessine le texte en blanc d'abord sur le canvas temporaire
+    tempCtx.fillStyle = "white";
+    tempCtx.textAlign = "center";
+    tempCtx.textBaseline = "middle";
+    tempCtx.font = "bold 160px Arial";
+    tempCtx.fillText(texteHeure, w / 2, h / 2 - 20);
+
+    // On applique le 'source-in' pour le colorier en Cyan (comme ton icône)
+    tempCtx.globalCompositeOperation = 'source-in';
+    tempCtx.fillStyle = bleuNeon;
+    tempCtx.fillRect(0, 0, w, h);
+
+    // 3. DESSIN FINAL AVEC OMBRE (Comme la fin de ta fonction dessiner_icone)
     ctx.save();
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.font = "bold 18px Arial";
-    ctx.fillText(ligne1, x + 100, y + 125);
-    ctx.fillText(ligne2, x + 100, y + 155);
-    ctx.fillText(ligne3, x + 100, y + 185);
+    ctx.shadowBlur = 25; 
+    ctx.shadowColor = bleuNeon;
+    
+    // On dessine le texte déjà bleu sur le canvas principal
+    ctx.drawImage(tempCanvas, x, y);
+
+    // 4. LA DATE (Même logique, plus petit)
+    const options = { weekday: 'long', day: 'numeric', month: 'long' };
+    const dateStr = maintenant.toLocaleDateString('fr-FR', options).toUpperCase();
+    
+    // On peut réutiliser le tempCanvas pour la date
+    tempCtx.globalCompositeOperation = 'source-over'; // Reset
+    tempCtx.clearRect(0, 0, w, h);
+    tempCtx.font = "bold 35px Arial";
+    tempCtx.letterSpacing = "6px";
+    tempCtx.fillStyle = "white";
+    tempCtx.fillText(dateStr, w / 2, h - 80);
+    
+    tempCtx.globalCompositeOperation = 'source-in';
+    tempCtx.fillStyle = bleuNeon;
+    tempCtx.fillRect(0, 0, w, h);
+    
+    ctx.shadowBlur = 15;
+    ctx.drawImage(tempCanvas, x, y);
+    
     ctx.restore();
-}
-
-export async function lire_api(url, chemin) {
-    try {
-        const response = await fetch(url);
-        let data = await response.json();
-        if (data.results && data.results[0]) data = data.results[0];
-
-        // Si chemin est une chaîne "a.b", on split. Si c'est un tableau, on le garde tel quel.
-        const cles = Array.isArray(chemin) ? chemin : chemin.split('.');
-        const valeur = cles.reduce((obj, key) => obj?.[key], data);
-        
-        return valeur !== undefined && valeur !== null ? valeur : "--";
-    } catch (e) {
-        console.error("Erreur API:", url, e);
-        return "--";
-    }
 }
