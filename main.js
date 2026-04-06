@@ -15,16 +15,6 @@ const HEIGHT = 600;
 canvas.width = WIDTH;
 canvas.height = HEIGHT;
 
-var prix_sp95 = "---";
-
-/* Mise à jour des prix */
-async function mettre_a_jour_prix() {
-    prix_sp95 = await recupererPrix();
-}
-
-mettre_a_jour_prix();
-setInterval(mettre_a_jour_prix, 3600000);
-
 /* Boucle de rendu principale */
 function boucle_principale() {
     // On nettoie tout l'écran (fond noir)
@@ -32,7 +22,7 @@ function boucle_principale() {
 
     // 2. DESSIN DES MODULES (Sans cadre autour)
     // Ils sont placés dans ton espace virtuel de 1200x600
-    dessinerEssence(ctx, 0, 0, prix_sp95);
+    dessinerEssence(ctx, 0, 0);
     dessinerMeteo(ctx, 200, 0);
     dessinerHorloge(ctx, 400, 0);
     dessinerMaison(ctx, 600, 0, 200, 200);
