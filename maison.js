@@ -1,12 +1,12 @@
-// --- FICHIER maison.js (COORDONNÉES EXACTES) ---
+// --- FICHIER maison.js (CORPS REMPLI) ---
 
-// 1. Ton SVG avec tes points précis : M 4 21 L 4 11 L 10 5 L 16 11 L 16 21 Z (Corps) 
-// et M 2 10 L 10 2 L 18 10 (Toit)
+// 1. Ton SVG avec le remplissage activé pour le corps
 const svgData = `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 24">
-        <g fill="none" stroke="#00ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <g fill="#00ffff" stroke="#00ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M 4 21 L 4 11 L 10 5 L 16 11 L 16 21 Z" />
-            <path d="M 2 10 L 10 2 L 18 10" />
+            
+            <path d="M 2 10 L 10 2 L 18 10" fill="none" />
         </g>
     </svg>`;
 
@@ -25,7 +25,7 @@ export function dessinerMaison(ctx, x, y, w = 200, h = 200) {
     ctx.lineWidth = 2;
     ctx.strokeRect(x, y, w, h);
 
-    // --- B. L'ICÔNE NÉON (TES POINTS) ---
+    // --- B. L'ICÔNE NÉON (TES POINTS ET REMPLISSAGE) ---
     ctx.shadowBlur = 20;
     ctx.shadowColor = "#00ffff";
     
