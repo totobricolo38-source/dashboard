@@ -4,6 +4,7 @@ import { dessinerEssence } from './essence.js';
 import { dessinerMaison } from './maison.js';
 import { dessinerPiscine } from './piscine.js';
 import { dessinerBatterie } from './batterie.js';
+import { dessinerBourse } from './bourse.js';
 
 // 1. INITIALISATION DU CANVAS
 const canvas = document.getElementById('mainCanvas');
@@ -29,6 +30,7 @@ function boucle_principale() {
     dessinerMaison(ctx, 600, 0, 200, 200);
     dessinerPiscine(ctx, 800, 0, 200, 200);
     dessinerBatterie(ctx, 0, 200, 200, 200);
+    dessinerBourse(ctx, 0, 400, 200, 200);
     requestAnimationFrame(boucle_principale);
 }
 
