@@ -32,7 +32,7 @@ function boucle_principale() {
     dessinerPiscine(ctx, 800, 0, 200, 200);
     dessinerBatterie(ctx, 0, 200, 200, 200);
     dessinerBourse(ctx, 200, 200, 200, 200);
-    dessinerhorloge2(ctx,400,200,600,400);
+    dessinerHorloge2(ctx,400,200,600,400);
     requestAnimationFrame(boucle_principale);
 }
 
