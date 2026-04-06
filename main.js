@@ -1,6 +1,6 @@
 import { dessinerMeteo } from './meteo.js';
 import { dessinerHorloge } from './horloge.js';
-import { dessinerEssence, recupererPrix } from './essence.js';
+import { dessinerEssence } from './essence.js';
 import { dessinerMaison } from './maison.js';
 import { dessinerPiscine } from './piscine.js';
 
