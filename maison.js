@@ -1,35 +1,56 @@
 // --- FICHIER maison.js ---
 
-// 1. On définit le SVG "pur" (sans dimensions, juste la viewBox)
+// 1. Le SVG de la maison (en format texte pour être intégré)
 const svgData = `
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 24 26">
-        <g fill="#00ffff" stroke="#00ffff" stroke-width="1.2">
-            <path d="M4 21V11l6-6 6 6v10z" stroke="none"/>
-            <path d="M2 10l8-8 8 8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <g fill="none" stroke="#00ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
         </g>
     </svg>`;
 
-// 2. Préparation de l'image (Blob technique pour le néon)
+// 2. Création de l'image à partir du SVG
 const imgMaison = new Image();
 const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
 const url = URL.createObjectURL(svgBlob);
 imgMaison.src = url;
 
-// 3. La fonction d'export pour dessiner
-// x, y : position dans le canvas (coordonnées 1200x600)
-// w, h : taille de dessin voulue (ici 200x200)
+/**
+ * Dessine le module Maison : un cadre blanc et une icône néon
+ * @param {CanvasRenderingContext2D} ctx - Le contexte du canvas
+ * @param {number} x - Position X (ex: 600)
+ * @param {number} y - Position Y (ex: 0)
+ * @param {number} w - Largeur (200)
+ * @param {number} h - Hauteur (200)
+ */
 export function dessinerMaison(ctx, x, y, w = 200, h = 200) {
-    // On attend que l'image soit chargée avant de dessiner
-    if (!imgMaison.complete) return; 
+    // Sécurité : on ne dessine que si l'image est prête
+    if (!imgMaison.complete) return;
 
     ctx.save();
+
+    // --- A. LE CADRE BLANC ---
+    // On le dessine sans néon pour qu'il reste parfaitement net
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, w, h);
+
+    // --- B. L'ICÔNE NÉON ---
+    ctx.shadowBlur = 20;            // Intensité du halo
+    ctx.shadowColor = "#00ffff";    // Couleur du néon (Cyan)
     
-    // --- L'EFFET NÉON ---
-    ctx.shadowBlur = 20;            // Intensité de la lueur
-    ctx.shadowColor = "#00ffff";    // Couleur Cyan
+    // On ajoute un padding (marge interne) pour que l'icône 
+    // ne touche pas les bords du carré blanc
+    const padding = 40; 
+    const iconeSize = w - (padding * 2);
     
-    // Dessin de l'image à la position et taille demandée
-    ctx.drawImage(imgMaison, x, y, w, h);
-    
-    ctx.restore(); // IMPORTANT : Pour ne pas contaminer les autres modules
+    ctx.drawImage(
+        imgMaison, 
+        x + padding, 
+        y + padding, 
+        iconeSize, 
+        iconeSize
+    );
+
+    ctx.restore();
 }
