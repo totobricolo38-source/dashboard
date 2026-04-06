@@ -2,22 +2,34 @@ import { dessinerMeteo } from './meteo.js';
 import { dessinerHorloge } from './horloge.js';
 import { dessinerEssence, recupererPrix } from './essence.js';
 
-var ctx = document.getElementById('mainCanvas').getContext('2d');
+// 1. INITIALISATION DU CANVAS (RÉSOLUTION FIXE)
+const canvas = document.getElementById('mainCanvas');
+const ctx = canvas.getContext('2d');
+
+const WIDTH = 1200;
+const HEIGHT = 600;
+
+// On définit la surface de dessin interne
+canvas.width = WIDTH;
+canvas.height = HEIGHT;
+
 var prix_sp95 = "---";
 
-/* Fonction de mise à jour des données */
+/* Mise à jour des prix */
 async function mettre_a_jour_prix() {
     prix_sp95 = await recupererPrix();
 }
 
-/* Initialisation */
 mettre_a_jour_prix();
 setInterval(mettre_a_jour_prix, 3600000);
 
 /* Boucle de rendu principale */
 function boucle_principale() {
-    ctx.clearRect(0, 0, 1200, 600);
+    // On nettoie tout l'écran (fond noir)
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
+    // 2. DESSIN DES MODULES (Sans cadre autour)
+    // Ils sont placés dans ton espace virtuel de 1200x600
     dessinerEssence(ctx, 0, 0, prix_sp95);
     dessinerMeteo(ctx, 200, 0);
     dessinerHorloge(ctx, 400, 0);
