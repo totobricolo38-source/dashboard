@@ -49,22 +49,20 @@ export function dessiner_widget(ctx, x, y, iconeName, ligne1, ligne2, ligne3) {
  * @param {string} champ - Le nom de la clé à extraire (ex: "field1" ou "e10_prix")
  * @returns {Promise<any>} - La valeur ou "--"
  */
-export async function lire_api(url, champ) {
+export async function lire_api(url, chemin) {
     try {
         const response = await fetch(url);
-        const data = await response.json();
+        let data = await response.json();
         
-        // Si c'est du ThingSpeak (format classique)
-        if (data[champ] !== undefined) return data[champ];
-        
-        // Si c'est l'API Essence (format OpenData avec results[0])
-        if (data.results && data.results[0] && data.results[0][champ] !== undefined) {
-            return data.results[0][champ];
-        }
+        // Si c'est de l'OpenData (Essence), on va direct dans results[0]
+        if (data.results && data.results[0]) data = data.results[0];
 
-        return "--";
+        // On suit le chemin point par point (ex: "current.temp")
+        const valeur = chemin.split('.').reduce((obj, key) => obj?.[key], data);
+        
+        return valeur !== undefined && valeur !== null ? valeur : "--";
     } catch (e) {
-        console.error("Erreur lecture API:", url, e);
+        console.error("Erreur API:", url, e);
         return "--";
     }
 }

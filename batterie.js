@@ -1,55 +1,30 @@
 // --- FICHIER batterie.js ---
-import { dessiner_widget } from './utils.js';
+import { dessiner_widget, lire_api } from './utils.js';
 
-let batAir = "--";
-let batPiscine = "--";
-let batChambre = "--";
+let batAir = "--", batPiscine = "--", batChambre = "--";
+
+// On définit la base une seule fois pour la lisibilité
+const BASE = "https://api.thingspeak.com/channels/2787477/fields/";
 
 /**
- * Récupération des 3 niveaux de batterie (Fields 3, 6 et 8)
+ * Récupération simplifiée des 3 niveaux de batterie
  */
 export async function majDonneesBatterie() {
-    const channelID = "2787477";
-    const baseURL = `https://api.thingspeak.com/channels/${channelID}/fields/`;
-
-    try {
-        // Récupération simultanée des 3 batteries
-        const [resAir, resPool, resBR] = await Promise.all([
-            fetch(`${baseURL}3/last.json`),
-            fetch(`${baseURL}6/last.json`),
-            fetch(`${baseURL}8/last.json`)
-        ]);
-
-        const dataAir = await resAir.json();
-        const dataPool = await resPool.json();
-        const dataBR = await resBR.json();
-
-        // Mise à jour des variables (on ajoute % car ce sont des batteries)
-        if (dataAir.field3 !== null) batAir = dataAir.field3;
-        if (dataPool.field6 !== null) batPiscine = dataPool.field6;
-        if (dataBR.field8 !== null) batChambre = dataBR.field8;
-
-        console.log("Batteries : Mise à jour OK");
-    } catch (e) {
-        console.error("Erreur lors de la récupération des batteries :", e);
-    }
+    // Utilisation de lire_api avec le lien complet et le nom du champ à extraire
+    batAir     = await lire_api(`${BASE}3/last.json`, "field3");
+    batPiscine = await lire_api(`${BASE}6/last.json`, "field6");
+    batChambre = await lire_api(`${BASE}8/last.json`, "field8");
+    
+    console.log("Batteries : Mise à jour OK");
 }
 
-// Initialisation et boucle 30s
+// Lancement et boucle de rafraîchissement
 majDonneesBatterie();
 setInterval(majDonneesBatterie, 30000);
 
 /**
- * Dessin du widget Batterie via l'outil de haut niveau
+ * Rendu du widget
  */
 export function dessinerBatterie(ctx, x, y) {
-    dessiner_widget(
-        ctx,
-        x,
-        y,
-        "batterie.svg",
-        `EXT : ${batAir}`,
-        `PISC : ${batPiscine}`,
-        `CHAM : ${batChambre}`
-    );
+    dessiner_widget(ctx,x,y,"batterie.svg",`EXT : ${batAir}`,`PISC : ${batPiscine}`,`CHAM : ${batChambre});
 }
