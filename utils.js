@@ -66,3 +66,23 @@ export async function lire_api(url, chemin) {
         return "--";
     }
 }
+
+export async function lire_bourse(ticker) {
+    try {
+        // On utilise un proxy pour éviter le blocage CORS de Stooq
+        const url = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://stooq.com/q/l/?s=${ticker}&f=sd2t2l&e=csv`)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        // Le contenu CSV est dans data.contents
+        // Format reçu : "Symbol,Date,Time,Last" -> "AI.PA,2026-04-06,17:35:02,180.52"
+        const lignes = data.contents.split('\n');
+        const valeurs = lignes[1].split(',');
+        const prix = valeurs[3]; // La 4ème colonne est le dernier cours
+
+        return prix && !isNaN(prix) ? prix : "--";
+    } catch (e) {
+        console.error("Erreur Bourse:", e);
+        return "--";
+    }
+}
