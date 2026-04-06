@@ -1,5 +1,6 @@
 import { dessinerMeteo } from './meteo.js';
 import { dessinerHorloge } from './horloge.js';
+import { dessinerHorloge2 } from './horloge2.js';
 import { dessinerEssence } from './essence.js';
 import { dessinerMaison } from './maison.js';
 import { dessinerPiscine } from './piscine.js';
@@ -31,6 +32,7 @@ function boucle_principale() {
     dessinerPiscine(ctx, 800, 0, 200, 200);
     dessinerBatterie(ctx, 0, 200, 200, 200);
     dessinerBourse(ctx, 200, 200, 200, 200);
+    dessinerhorloge2(ctx,400,200,600,400);
     requestAnimationFrame(boucle_principale);
 }
 
