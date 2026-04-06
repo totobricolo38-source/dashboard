@@ -43,46 +43,19 @@ export function dessiner_widget(ctx, x, y, iconeName, ligne1, ligne2, ligne3) {
     ctx.restore();
 }
 
-/**
- * Récupère une donnée JSON depuis n'importe quel lien
- * @param {string} url - Le lien complet de l'API
- * @param {string} champ - Le nom de la clé à extraire (ex: "field1" ou "e10_prix")
- * @returns {Promise<any>} - La valeur ou "--"
- */
 export async function lire_api(url, chemin) {
     try {
         const response = await fetch(url);
         let data = await response.json();
-        
-        // Si c'est de l'OpenData (Essence), on va direct dans results[0]
         if (data.results && data.results[0]) data = data.results[0];
 
-        // On suit le chemin point par point (ex: "current.temp")
-        const valeur = chemin.split('.').reduce((obj, key) => obj?.[key], data);
+        // Si chemin est une chaîne "a.b", on split. Si c'est un tableau, on le garde tel quel.
+        const cles = Array.isArray(chemin) ? chemin : chemin.split('.');
+        const valeur = cles.reduce((obj, key) => obj?.[key], data);
         
         return valeur !== undefined && valeur !== null ? valeur : "--";
     } catch (e) {
         console.error("Erreur API:", url, e);
-        return "--";
-    }
-}
-
-export async function lire_bourse(ticker) {
-    try {
-        // On utilise un proxy pour éviter le blocage CORS de Stooq
-        const url = `https://api.allorigins.win/get?url=${encodeURIComponent(`https://stooq.com/q/l/?s=${ticker}&f=sd2t2l&e=csv`)}`;
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        // Le contenu CSV est dans data.contents
-        // Format reçu : "Symbol,Date,Time,Last" -> "AI.PA,2026-04-06,17:35:02,180.52"
-        const lignes = data.contents.split('\n');
-        const valeurs = lignes[1].split(',');
-        const prix = valeurs[3]; // La 4ème colonne est le dernier cours
-
-        return prix && !isNaN(prix) ? prix : "--";
-    } catch (e) {
-        console.error("Erreur Bourse:", e);
         return "--";
     }
 }
