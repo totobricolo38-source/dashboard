@@ -3,6 +3,7 @@ import { dessinerHorloge } from './horloge.js';
 import { dessinerEssence } from './essence.js';
 import { dessinerMaison } from './maison.js';
 import { dessinerPiscine } from './piscine.js';
+import { dessinerBatterie } from './batterie.js';
 
 // 1. INITIALISATION DU CANVAS
 const canvas = document.getElementById('mainCanvas');
@@ -27,7 +28,7 @@ function boucle_principale() {
     dessinerHorloge(ctx, 400, 0);
     dessinerMaison(ctx, 600, 0, 200, 200);
     dessinerPiscine(ctx, 800, 0, 200, 200);
-
+    dessinerPiscine(ctx, 0, 200, 200, 200);
     requestAnimationFrame(boucle_principale);
 }
 
