@@ -30,7 +30,7 @@ function boucle_principale() {
     dessinerMaison(ctx, 600, 0, 200, 200);
     dessinerPiscine(ctx, 800, 0, 200, 200);
     dessinerBatterie(ctx, 0, 200, 200, 200);
-    dessinerBourse(ctx, 0, 400, 200, 200);
+    dessinerBourse(ctx, 200, 200, 200, 200);
     requestAnimationFrame(boucle_principale);
 }
 
