@@ -1,16 +1,14 @@
 // --- FICHIER piscine.js ---
+import { dessiner_icone } from './utils.js';
 
-const imgPiscine = new Image();
-imgPiscine.src = "./piscine.svg"; 
-
+// Variables pour stocker les données
 let tempAir = "--";
 let tempEau = "--";
 let niveauEau = "--";
 
-// Création d'un canvas invisible pour colorier l'icône sans affecter le reste
-const offCanvas = document.createElement('canvas');
-const offCtx = offCanvas.getContext('2d');
-
+/**
+ * Récupération des données ThingSpeak
+ */
 export async function majDonneesPiscine() {
     const channelID = "2787477";
     try {
@@ -24,65 +22,56 @@ export async function majDonneesPiscine() {
         const dataEau = await resEau.json();
         const dataNiv = await resNiv.json();
 
+        // Mise à jour si données présentes (Air=Field1, Eau=Field4, Niveau=Field5)
         if (dataAir && dataAir.field1 !== null) tempAir = dataAir.field1;
         if (dataEau && dataEau.field4 !== null) tempEau = dataEau.field4;
         if (dataNiv && dataNiv.field5 !== null) niveauEau = dataNiv.field5;
 
-        console.log("Données Piscine mises à jour.");
+        console.log("Données Piscine OK");
     } catch (e) {
-        console.error("Erreur Fetch Piscine :", e);
+        console.error("Erreur Fetch Piscine:", e);
     }
 }
 
+// Initialisation
 majDonneesPiscine();
 setInterval(majDonneesPiscine, 30000);
 
+/**
+ * Dessin du widget complet
+ */
 export function dessinerPiscine(ctx, x, y, w = 200, h = 200) {
-    // 1. DESSIN DU CADRE (Normal)
+    // A. CADRE EXTÉRIEUR
     ctx.save();
     ctx.strokeStyle = "white";
     ctx.lineWidth = 2;
     ctx.strokeRect(x, y, w, h);
     ctx.restore();
 
-    // 2. DESSIN DE L'ICÔNE COLORÉE
-    if (imgPiscine.complete && imgPiscine.naturalWidth !== 0) {
-        const size = 80;
-        
-        // On prépare le canvas invisible à la taille de l'icône
-        offCanvas.width = size;
-        offCanvas.height = size;
-        
-        // On dessine l'icône sur le canvas invisible
-        offCtx.clearRect(0, 0, size, size);
-        offCtx.drawImage(imgPiscine, 0, 0, size, size);
-        
-        // On colorie l'icône en cyan sur le canvas invisible UNIQUEMENT
-        offCtx.globalCompositeOperation = 'source-in';
-        offCtx.fillStyle = "#00ffff";
-        offCtx.fillRect(0, 0, size, size);
-        
-        // On recopie le canvas invisible sur le canvas principal
-        ctx.save();
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = "#00ffff";
-        ctx.drawImage(offCanvas, x + (w / 2 - size / 2), y + 15);
-        ctx.restore();
-    }
+    // B. ICÔNE (via la fonction partagée dans utils.js)
+    // On centre l'icône (80x80) horizontalement dans le cadre
+    const tailleIcone = 80;
+    const iconeX = x + (w / 2 - tailleIcone / 2);
+    const iconeY = y + 15;
+    
+    dessiner_icone(ctx, iconeX, iconeY, tailleIcone, tailleIcone, "piscine.svg");
 
-    // 3. TEXTES
+    // C. AFFICHAGE DES TEXTES
     ctx.save();
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
     
+    // Air
     ctx.font = "16px Arial";
-    ctx.fillText("AIR EXT : " + tempAir + "°", x + w / 2, y + 115);
+    ctx.fillText("AIR EXT : " + tempAir + "°", x + w/2, y + 115);
     
+    // Eau (Principal)
     ctx.font = "bold 20px Arial";
-    ctx.fillText("EAU : " + tempEau + "°", x + w / 2, y + 145);
+    ctx.fillText("EAU : " + tempEau + "°", x + w/2, y + 145);
     
+    // Niveau
     ctx.font = "16px Arial";
-    ctx.fillText("NIVEAU : " + niveauEau, x + w / 2, y + 175);
+    ctx.fillText("NIVEAU : " + niveauEau, x + w/2, y + 175);
     
     ctx.restore();
 }
