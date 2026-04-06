@@ -4,7 +4,7 @@
 // --- ATTENTION : Vérifie l'orthographe ! 'pisine.svg' ou 'piscine.svg' ---
 // D'après ta capture, c'était 'pisine.svg'. J'utilise cette orthographe ici.
 const imgPiscine = new Image();
-imgPiscine.src = "./pisine.svg"; 
+imgPiscine.src = "./piscine.svg"; 
 
 // Variables globales pour stocker les données (initialisées à vide)
 let tempAir = "--";
