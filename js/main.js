@@ -49,14 +49,21 @@ canvas.addEventListener('touchstart', (event) => {
     traiterInteraction(touch.clientX, touch.clientY);
 }, { passive: false });
 
-// 3. GESTION DU CURSEUR (POINTER) SUR PC
 canvas.addEventListener('mousemove', (event) => {
     const rect = canvas.getBoundingClientRect();
+    
+    // 1. Calculer la position REELLE de la souris par rapport au bord du canvas
+    const xSurCanvas = event.clientX - rect.left;
+    const ySurCanvas = event.clientY - rect.top;
+
+    // 2. Ajuster en fonction du redimensionnement (le ratio)
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    const mouseX = (event.clientX - rect.left) * scaleX;
-    const mouseY = (event.clientY - rect.top) * scaleY;
+    
+    const mouseX = xSurCanvas * scaleX;
+    const mouseY = ySurCanvas * scaleY;
 
+    // 3. Test de collision (Le widget fait 200x200)
     if (mouseX >= ESP_X && mouseX <= ESP_X + 200 && 
         mouseY >= ESP_Y && mouseY <= ESP_Y + 200) {
         canvas.style.cursor = "pointer";
