@@ -29,6 +29,10 @@ client.on('connect', () => {
     mqttState.connected = true;
     client.subscribe('esp32/status');
     console.log("✅ MQTT Manager : Connecté");
+
+    // DEMANDE D'ÉTAT INITIAL
+    // On demande à l'ESP32 : "T'es dans quel état là ?"
+    envoyerOrdre('esp32/led', 'get_status');
 });
 
 client.on('message', (topic, message) => {
