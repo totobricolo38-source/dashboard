@@ -76,10 +76,12 @@ canvas.addEventListener('mousemove', (event) => {
     }
 });
 
-setInterval(() => {
-    // On appelle directement la fonction importée en haut du fichier
-    envoyerOrdre('esp32/led', 'get_status');
-    console.log("🔄 Synchro automatique envoyée");
+setInterval(function() {
+    try {
+        envoyerOrdre('esp32/led', 'get_status');
+    } catch (e) {
+        console.log("Erreur synchro:", e);
+    }
 }, 5000);
 
 /* Boucle de rendu principale */
