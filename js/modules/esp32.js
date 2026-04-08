@@ -20,7 +20,7 @@ export function dessinerESP32(ctx, x, y) {
         "ampoule.svg", 
         "ESP32-S3", 
         mqttState.status, 
-        mqttState.connected ? "CLIQUEZ ICI" : "CONNEXION...", 
+        mqttState.connected ? "CLIQUEZ ICI!" : "CONNEXION...", 
         mqttState.color
     );
 }
