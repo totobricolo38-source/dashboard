@@ -1,9 +1,10 @@
 import 'https://unpkg.com/mqtt/dist/mqtt.min.js';
 
-// On définit les états partagés
-var mqttState = {
+// ON DÉFINIT ET ON EXPORTE L'ÉTAT EN UNE SEULE FOIS
+export const mqttState = {
     color: "#00ffff",
-    status: "Initialisation..."
+    status: "Initialisation...",
+    connected: false
 };
 
 const mapHex = {
@@ -13,7 +14,8 @@ const mapHex = {
     "Vert": "#00ff00",
     "Jaune": "#ffff00",
     "Mode Arc-en-ciel activé !": "#00ffff", 
-    "LED éteinte": "#444444"
+    "LED éteinte": "#444444",
+    "éteinte": "#444444"
 };
 
 const options = {
@@ -30,20 +32,18 @@ client.on('connect', () => {
     console.log("✅ MQTT Manager : Connecté");
 
     // DEMANDE D'ÉTAT INITIAL
-    // On demande à l'ESP32 : "T'es dans quel état là ?"
     envoyerOrdre('esp32/led', 'get_status');
 });
 
 client.on('message', (topic, message) => {
     if (topic === 'esp32/status') {
         const text = message.toString();
-        console.log("Accusé reçu :", text); // Pour vérifier dans la console
+        console.log("Accusé reçu :", text);
 
-        // On nettoie le message pour ne garder que le nom de la couleur
-        // Si l'ESP envoie "OK : LED est maintenant Violette"
+        // Nettoyage du message
         mqttState.status = text.replace("OK : LED est maintenant ", "");
         
-        // On met à jour la couleur du thème
+        // Mise à jour de la couleur (on cherche dans mapHex)
         mqttState.color = mapHex[mqttState.status] || "#00ffff";
     }
 });
