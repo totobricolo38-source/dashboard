@@ -1,4 +1,3 @@
-
 import { dessinerMeteo } from './modules/meteo.js';
 import { dessinerHorloge } from './modules/horloge.js';
 import { dessinerEssence } from './modules/essence.js';
@@ -19,16 +18,42 @@ canvas.width = WIDTH;
 canvas.height = HEIGHT;
 
 // Positions du widget ESP32
-const ESP_X = 1000; // Par exemple, à droite de la piscine
+const ESP_X = 1000; 
 const ESP_Y = 0;
 
-canvas.addEventListener('mousemove', (event) => {
+// --- FONCTION D'INTERACTION UNIFIÉE (PC & MOBILE) ---
+function traiterInteraction(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
     
-    // Calcul qui prend en compte l'étirement (scaling) du canvas
+    // Calcul qui prend en compte l'étirement (scaling) du canvas pour mobile/écrans HD
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
     
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+
+    // On délègue le clic au module ESP32
+    gererClicESP32(x, y, ESP_X, ESP_Y);
+}
+
+// 1. Écouteur pour la SOURIS (Clic standard)
+canvas.addEventListener('mousedown', (event) => {
+    traiterInteraction(event.clientX, event.clientY);
+});
+
+// 2. Écouteur pour le TOUCHER (Doigt sur mobile)
+canvas.addEventListener('touchstart', (event) => {
+    // Empêche le défilement de la page quand on touche le widget
+    event.preventDefault(); 
+    const touch = event.touches[0];
+    traiterInteraction(touch.clientX, touch.clientY);
+}, { passive: false });
+
+// 3. GESTION DU CURSEUR (POINTER) SUR PC
+canvas.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
     const mouseX = (event.clientX - rect.left) * scaleX;
     const mouseY = (event.clientY - rect.top) * scaleY;
 
@@ -40,33 +65,19 @@ canvas.addEventListener('mousemove', (event) => {
     }
 });
 
-// GESTION DU CLIC
-canvas.addEventListener('click', (event) => {
-    const rect = canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-
-    // On délègue la vérification au module
-    gererClicESP32(mouseX, mouseY, ESP_X, ESP_Y);
-});
-
-
-// --- ON A SUPPRIMÉ TOUTE LA LOGIQUE "recupererPrix" ICI ---
-
 /* Boucle de rendu principale */
 function boucle_principale() {
-    // On nettoie tout l'écran
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
 
-    // 2. DESSIN DES MODULES (Note : dessinerEssence n'a plus besoin du 4ème argument)
     dessinerEssence(ctx, 0, 0); 
     dessinerMeteo(ctx, 200, 0);
     dessinerMaison(ctx, 600, 0, 200, 200);
     dessinerPiscine(ctx, 800, 0, 200, 200);
-    dessinerESP32(ctx, ESP_X, ESP_Y);
+    dessinerESP32(ctx, ESP_X, ESP_Y); // Utilise les variables ESP_X et ESP_Y
     dessinerBatterie(ctx, 0, 200, 200, 200);
     dessinerBourse(ctx, 200, 200, 200, 200);
-    dessinerHorloge(ctx,400,200,600,400);
+    dessinerHorloge(ctx, 400, 200, 600, 400);
+
     requestAnimationFrame(boucle_principale);
 }
 
