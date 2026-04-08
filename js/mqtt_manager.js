@@ -8,9 +8,13 @@ export const mqttState = {
 };
 
 const mapHex = {
-    "Violette": "#800080", "Rouge": "#ff0000", "Bleu": "#0000ff",
-    "Vert": "#00ff00", "Jaune": "#ffff00", 
-    "Mode Arc-en-ciel activé !": "#00ffff", "LED éteinte": "#444444"
+    "Violette": "#800080",
+    "Rouge": "#ff0000",
+    "Bleu": "#0000ff",
+    "Vert": "#00ff00",
+    "Jaune": "#ffff00",
+    "Mode Arc-en-ciel activé !": "#00ffff", 
+    "LED éteinte": "#444444"
 };
 
 const options = {
@@ -30,7 +34,13 @@ client.on('connect', () => {
 client.on('message', (topic, message) => {
     if (topic === 'esp32/status') {
         const text = message.toString();
+        console.log("Accusé reçu :", text); // Pour vérifier dans la console
+
+        // On nettoie le message pour ne garder que le nom de la couleur
+        // Si l'ESP envoie "OK : LED est maintenant Violette"
         mqttState.status = text.replace("OK : LED est maintenant ", "");
+        
+        // On met à jour la couleur du thème
         mqttState.color = mapHex[mqttState.status] || "#00ffff";
     }
 });
