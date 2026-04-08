@@ -17,7 +17,7 @@ export function dessinerESP32(ctx, x, y) {
     // Il pioche directement les infos dans mqttState
     dessiner_widget_mqtt(
         ctx, x, y, 
-        "piscine.svg", 
+        "ampoule.svg", 
         "ESP32-S3", 
         mqttState.status, 
         mqttState.connected ? "CLIQUEZ ICI" : "CONNEXION...", 
