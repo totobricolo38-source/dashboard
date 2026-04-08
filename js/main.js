@@ -65,6 +65,15 @@ canvas.addEventListener('mousemove', (event) => {
     }
 });
 
+// On demande le statut à l'ESP32 toutes les 5 secondes
+// Cela synchronise toutes les pages ouvertes sans recharger le navigateur
+setInterval(() => {
+    import('./mqtt_manager.js').then(module => {
+        module.envoyerOrdre('esp32/led', 'get_status');
+        console.log("🔄 Synchro automatique : demande de statut envoyée");
+    });
+}, 5000);
+
 /* Boucle de rendu principale */
 function boucle_principale() {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -77,8 +86,8 @@ function boucle_principale() {
     dessinerBatterie(ctx, 0, 200, 200, 200);
     dessinerBourse(ctx, 200, 200, 200, 200);
     dessinerHorloge(ctx, 400, 200, 600, 400);
-
     requestAnimationFrame(boucle_principale);
 }
 
 boucle_principale();
+
