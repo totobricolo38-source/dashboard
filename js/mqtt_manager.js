@@ -1,4 +1,4 @@
-import 'https://unpkg.com/mqtt/dist/mqtt.min.js';
+//import 'https://unpkg.com/mqtt/dist/mqtt.min.js';
 
 // ON DÉFINIT ET ON EXPORTE L'ÉTAT EN UNE SEULE FOIS
 export const mqttState = {
