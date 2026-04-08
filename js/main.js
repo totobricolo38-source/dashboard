@@ -6,6 +6,7 @@ import { dessinerMaison } from './modules/maison.js';
 import { dessinerPiscine } from './modules/piscine.js';
 import { dessinerBatterie } from './modules/batterie.js';
 import { dessinerBourse } from './modules/bourse.js';
+import { dessinerESP32, gererClicESP32 } from './modules/esp32.js';
 
 // 1. INITIALISATION DU CANVAS
 const canvas = document.getElementById('mainCanvas');
@@ -16,6 +17,21 @@ const HEIGHT = 600;
 
 canvas.width = WIDTH;
 canvas.height = HEIGHT;
+
+// Positions du widget ESP32
+const ESP_X = 1000; // Par exemple, à droite de la piscine
+const ESP_Y = 0;
+
+// GESTION DU CLIC
+canvas.addEventListener('click', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    // On délègue la vérification au module
+    gererClicESP32(mouseX, mouseY, ESP_X, ESP_Y);
+});
+
 
 // --- ON A SUPPRIMÉ TOUTE LA LOGIQUE "recupererPrix" ICI ---
 
@@ -29,6 +45,7 @@ function boucle_principale() {
     dessinerMeteo(ctx, 200, 0);
     dessinerMaison(ctx, 600, 0, 200, 200);
     dessinerPiscine(ctx, 800, 0, 200, 200);
+    dessinerESP32(ctx, ESP_X, ESP_Y);
     dessinerBatterie(ctx, 0, 200, 200, 200);
     dessinerBourse(ctx, 200, 200, 200, 200);
     dessinerHorloge(ctx,400,200,600,400);
