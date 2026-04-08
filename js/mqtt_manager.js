@@ -1,5 +1,5 @@
 //import 'https://unpkg.com/mqtt/dist/mqtt.min.js';
-
+import mqtt from 'https://cdn.jsdelivr.net/npm/mqtt@5.10.1/+esm';
 // ON DÉFINIT ET ON EXPORTE L'ÉTAT EN UNE SEULE FOIS
 export const mqttState = {
     color: "#00ffff",
