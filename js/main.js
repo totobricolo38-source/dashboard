@@ -6,6 +6,7 @@ import { dessinerPiscine } from './modules/piscine.js';
 import { dessinerBatterie } from './modules/batterie.js';
 import { dessinerBourse } from './modules/bourse.js';
 import { dessinerESP32, gererClicESP32 } from './modules/esp32.js';
+import { envoyerOrdre } from './mqtt_manager.js';
 
 // 1. INITIALISATION DU CANVAS
 const canvas = document.getElementById('mainCanvas');
@@ -75,11 +76,10 @@ canvas.addEventListener('mousemove', (event) => {
     }
 });
 
-// --- SYNCHRONISATION MQTT ---
 setInterval(() => {
-    import('./mqtt_manager.js').then(module => {
-        module.envoyerOrdre('esp32/led', 'get_status');
-    });
+    // On appelle directement la fonction importée en haut du fichier
+    envoyerOrdre('esp32/led', 'get_status');
+    console.log("🔄 Synchro automatique envoyée");
 }, 5000);
 
 /* Boucle de rendu principale */
