@@ -17,67 +17,68 @@ const HEIGHT = 600;
 canvas.width = WIDTH;
 canvas.height = HEIGHT;
 
-// Positions du widget ESP32
 const ESP_X = 1000; 
 const ESP_Y = 0;
 
-// --- FONCTION D'INTERACTION UNIFIÉE (PC & MOBILE) ---
-function traiterInteraction(clientX, clientY) {
+// --- LA FONCTION MAGIQUE DE RECALCUL DES COORDONNÉES ---
+// Elle gère les bandes vides (haut/bas ou gauche/droite)
+function obtenirCoordonneesRecalibrees(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
     
-    // Calcul qui prend en compte l'étirement (scaling) du canvas pour mobile/écrans HD
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    
-    const x = (clientX - rect.left) * scaleX;
-    const y = (clientY - rect.top) * scaleY;
+    const ratioCanvas = WIDTH / HEIGHT; // 2 (1200/600)
+    const ratioFenetre = rect.width / rect.height;
 
-    // On délègue le clic au module ESP32
-    gererClicESP32(x, y, ESP_X, ESP_Y);
+    let echelle, offsetX = 0, offsetY = 0;
+
+    if (ratioFenetre > ratioCanvas) {
+        // Bandes vides sur les côtés
+        echelle = HEIGHT / rect.height;
+        offsetX = (rect.width - (WIDTH / echelle)) / 2;
+    } else {
+        // Bandes vides en haut et en bas
+        echelle = WIDTH / rect.width;
+        offsetY = (rect.height - (HEIGHT / echelle)) / 2;
+    }
+
+    return {
+        x: (clientX - rect.left - offsetX) * echelle,
+        y: (clientY - rect.top - offsetY) * echelle
+    };
 }
 
-// 1. Écouteur pour la SOURIS (Clic standard)
+// --- GESTION DES INTERACTIONS ---
+
+function traiterInteraction(clientX, clientY) {
+    const coords = obtenirCoordonneesRecalibrees(clientX, clientY);
+    gererClicESP32(coords.x, coords.y, ESP_X, ESP_Y);
+}
+
 canvas.addEventListener('mousedown', (event) => {
     traiterInteraction(event.clientX, event.clientY);
 });
 
-// 2. Écouteur pour le TOUCHER (Doigt sur mobile)
 canvas.addEventListener('touchstart', (event) => {
-    // Empêche le défilement de la page quand on touche le widget
     event.preventDefault(); 
     const touch = event.touches[0];
     traiterInteraction(touch.clientX, touch.clientY);
 }, { passive: false });
 
 canvas.addEventListener('mousemove', (event) => {
-    const rect = canvas.getBoundingClientRect();
-    
-    // 1. Calculer la position REELLE de la souris par rapport au bord du canvas
-    const xSurCanvas = event.clientX - rect.left;
-    const ySurCanvas = event.clientY - rect.top;
+    const coords = obtenirCoordonneesRecalibrees(event.clientX, event.clientY);
 
-    // 2. Ajuster en fonction du redimensionnement (le ratio)
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    
-    const mouseX = xSurCanvas * scaleX;
-    const mouseY = ySurCanvas * scaleY;
-
-    // 3. Test de collision (Le widget fait 200x200)
-    if (mouseX >= ESP_X && mouseX <= ESP_X + 200 && 
-        mouseY >= ESP_Y && mouseY <= ESP_Y + 200) {
+    // Détection précise sur le dessin 1200x600
+    if (coords.x >= ESP_X && coords.x <= ESP_X + 200 && 
+        coords.y >= ESP_Y && coords.y <= ESP_Y + 200) {
         canvas.style.cursor = "pointer";
     } else {
         canvas.style.cursor = "default";
     }
 });
 
-// On demande le statut à l'ESP32 toutes les 5 secondes
-// Cela synchronise toutes les pages ouvertes sans recharger le navigateur
+// --- SYNCHRONISATION MQTT ---
 setInterval(() => {
     import('./mqtt_manager.js').then(module => {
         module.envoyerOrdre('esp32/led', 'get_status');
-        console.log("🔄 Synchro automatique : demande de statut envoyée");
     });
 }, 5000);
 
@@ -89,12 +90,12 @@ function boucle_principale() {
     dessinerMeteo(ctx, 200, 0);
     dessinerMaison(ctx, 600, 0, 200, 200);
     dessinerPiscine(ctx, 800, 0, 200, 200);
-    dessinerESP32(ctx, ESP_X, ESP_Y); // Utilise les variables ESP_X et ESP_Y
+    dessinerESP32(ctx, ESP_X, ESP_Y); 
     dessinerBatterie(ctx, 0, 200, 200, 200);
     dessinerBourse(ctx, 200, 200, 200, 200);
     dessinerHorloge(ctx, 400, 200, 600, 400);
+    
     requestAnimationFrame(boucle_principale);
 }
 
 boucle_principale();
-
