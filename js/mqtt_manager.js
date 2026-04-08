@@ -1,10 +1,9 @@
 import 'https://unpkg.com/mqtt/dist/mqtt.min.js';
 
 // On définit les états partagés
-export const mqttState = {
-    status: "OFF",
-    color: "#444444",
-    connected: false
+var mqttState = {
+    color: "#00ffff",
+    status: "Initialisation..."
 };
 
 const mapHex = {
@@ -51,7 +50,7 @@ client.on('message', (topic, message) => {
 
 // Fonction générique pour envoyer n'importe quel ordre
 export function envoyerOrdre(topic, message) {
-    if (mqttState.connected) {
+    if (client && client.connected) {
         client.publish(topic, message);
     }
 }
