@@ -1,3 +1,5 @@
+import 'https://unpkg.com/mqtt/dist/mqtt.min.js';
+
 // On définit les états partagés
 export const mqttState = {
     status: "OFF",
