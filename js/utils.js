@@ -3,10 +3,10 @@ const cacheIcones = {};
 const offCanvas = document.createElement('canvas');
 const offCtx = offCanvas.getContext('2d');
 
-export function dessiner_icone(ctx, x, y, w, h, name) {
+export function dessiner_icone(ctx, x, y, w, h, name, color = "#00ffff") { // Ajoute color ici
     if (!cacheIcones[name]) {
         cacheIcones[name] = new Image();
-        cacheIcones[name].src = "./" + name;
+        cacheIcones[name].src = name; // Retire le "./" en trop si tu passes déjà ./svg/
     }
     const img = cacheIcones[name];
     if (img.complete && img.naturalWidth !== 0) {
@@ -14,11 +14,12 @@ export function dessiner_icone(ctx, x, y, w, h, name) {
         offCtx.clearRect(0, 0, w, h);
         offCtx.drawImage(img, 0, 0, w, h);
         offCtx.globalCompositeOperation = 'source-in';
-        offCtx.fillStyle = "#00ffff";
+        offCtx.fillStyle = color; // <--- CHANGE ICI (au lieu de #00ffff)
         offCtx.fillRect(0, 0, w, h);
         offCtx.globalCompositeOperation = 'source-over';
         ctx.save();
-        ctx.shadowBlur = 20; ctx.shadowColor = "#00ffff";
+        ctx.shadowBlur = 20; 
+        ctx.shadowColor = color; // <--- CHANGE ICI (au lieu de #00ffff)
         ctx.drawImage(offCanvas, x, y, w, h);
         ctx.restore();
     }

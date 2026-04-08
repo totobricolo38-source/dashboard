@@ -22,6 +22,19 @@ canvas.height = HEIGHT;
 const ESP_X = 1000; // Par exemple, à droite de la piscine
 const ESP_Y = 0;
 
+// GESTION DU CURSEUR (POINTER)
+canvas.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    if (mouseX >= ESP_X && mouseX <= ESP_X + 200 && mouseY >= ESP_Y && mouseY <= ESP_Y + 200) {
+        canvas.style.cursor = "pointer";
+    } else {
+        canvas.style.cursor = "default";
+    }
+});
+
 // GESTION DU CLIC
 canvas.addEventListener('click', (event) => {
     const rect = canvas.getBoundingClientRect();
